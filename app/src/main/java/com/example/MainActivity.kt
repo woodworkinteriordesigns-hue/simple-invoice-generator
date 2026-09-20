@@ -58,8 +58,10 @@ class MainActivity : ComponentActivity() {
         AdManager.initialize(this)
         enableEdgeToEdge()
         setContent {
-            MyApplicationTheme {
-                InvoiceApp()
+            val viewModel: InvoiceViewModel = viewModel()
+            val isDarkMode by viewModel.isDarkMode.collectAsState()
+            MyApplicationTheme(darkTheme = isDarkMode) {
+                InvoiceApp(viewModel = viewModel)
             }
         }
     }

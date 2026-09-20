@@ -22,14 +22,17 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -69,6 +72,7 @@ fun InvoiceHistoryScreen(
 ) {
     val context = LocalContext.current
     val savedInvoices by viewModel.savedInvoices.collectAsState()
+    val isDarkMode by viewModel.isDarkMode.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
 
     val filteredInvoices = remember(savedInvoices, searchQuery) {
@@ -108,17 +112,44 @@ fun InvoiceHistoryScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = "Invoice History",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Text(
-                text = "Manage, view, and re-share past invoices",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Slate500
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "Invoice History",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = "Manage, view, and re-share past invoices",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Slate500
+                    )
+                }
+
+                FilledTonalButton(
+                    onClick = { viewModel.toggleDarkMode() },
+                    shape = RoundedCornerShape(10.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
+                    modifier = Modifier.testTag("history_theme_toggle_btn")
+                ) {
+                    Icon(
+                        imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
+                        contentDescription = if (isDarkMode) "Light Mode" else "Dark Mode",
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = if (isDarkMode) "Light" else "Dark",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(14.dp))
 

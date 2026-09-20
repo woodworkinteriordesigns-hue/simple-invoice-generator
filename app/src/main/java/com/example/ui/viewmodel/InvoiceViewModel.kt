@@ -51,6 +51,15 @@ class InvoiceViewModel(application: Application) : AndroidViewModel(application)
     private val _isGenerating = MutableStateFlow(false)
     val isGenerating: StateFlow<Boolean> = _isGenerating.asStateFlow()
 
+    private val _isDarkMode = MutableStateFlow(profileManager.isDarkMode())
+    val isDarkMode: StateFlow<Boolean> = _isDarkMode.asStateFlow()
+
+    fun toggleDarkMode() {
+        val newMode = !_isDarkMode.value
+        _isDarkMode.value = newMode
+        profileManager.setDarkMode(newMode)
+    }
+
     private val _userMessage = MutableStateFlow<String?>(null)
     val userMessage: StateFlow<String?> = _userMessage.asStateFlow()
 

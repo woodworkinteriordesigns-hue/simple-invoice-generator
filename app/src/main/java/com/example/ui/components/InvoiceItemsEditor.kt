@@ -29,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -40,8 +41,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.InvoiceItem
+import com.example.ui.theme.Blue600
+import com.example.ui.theme.Navy900
 import com.example.ui.theme.Slate100
 import com.example.ui.theme.Slate200
+import com.example.ui.theme.Slate400
 import com.example.ui.theme.Slate500
 
 @Composable
@@ -169,12 +173,16 @@ private fun ItemRowCard(
     onUpdate: (InvoiceItem) -> Unit,
     onDelete: () -> Unit
 ) {
+    val isDark = MaterialTheme.colorScheme.background.red < 0.2f
+    val rowBackground = if (isDark) MaterialTheme.colorScheme.surfaceVariant else Slate100
+    val rowBorder = if (isDark) MaterialTheme.colorScheme.outline else Slate200
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(Slate100)
-            .border(1.dp, Slate200, RoundedCornerShape(12.dp))
+            .background(rowBackground)
+            .border(1.dp, rowBorder, RoundedCornerShape(12.dp))
             .padding(12.dp)
             .testTag("item_row_$index")
     ) {
@@ -209,6 +217,20 @@ private fun ItemRowCard(
 
         Spacer(modifier = Modifier.height(6.dp))
 
+        val textFieldColors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+            focusedContainerColor = if (isDark) MaterialTheme.colorScheme.surface else androidx.compose.ui.graphics.Color.White,
+            unfocusedContainerColor = if (isDark) MaterialTheme.colorScheme.surface else androidx.compose.ui.graphics.Color.White,
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            cursorColor = MaterialTheme.colorScheme.primary,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = if (isDark) MaterialTheme.colorScheme.outline else Slate200
+        )
+
         OutlinedTextField(
             value = item.description,
             onValueChange = { onUpdate(item.copy(description = it)) },
@@ -216,6 +238,7 @@ private fun ItemRowCard(
             placeholder = { Text("e.g. Interior Design Consulting / Product") },
             singleLine = false,
             maxLines = 2,
+            colors = textFieldColors,
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag("item_${index}_desc_input"),
@@ -237,6 +260,7 @@ private fun ItemRowCard(
                 label = { Text("Qty") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 singleLine = true,
+                colors = textFieldColors,
                 modifier = Modifier
                     .weight(0.9f)
                     .testTag("item_${index}_qty_input"),
@@ -254,6 +278,7 @@ private fun ItemRowCard(
                 label = { Text("Price ($currency)") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 singleLine = true,
+                colors = textFieldColors,
                 modifier = Modifier
                     .weight(1.3f)
                     .testTag("item_${index}_price_input"),

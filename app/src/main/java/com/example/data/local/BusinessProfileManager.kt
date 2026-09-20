@@ -20,6 +20,14 @@ class BusinessProfileManager(context: Context) {
         )
     }
 
+    fun isDarkMode(): Boolean {
+        return prefs.getBoolean(KEY_DARK_MODE, false)
+    }
+
+    fun setDarkMode(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_DARK_MODE, enabled).apply()
+    }
+
     fun saveProfile(profile: BusinessProfile) {
         prefs.edit()
             .putString(KEY_NAME, profile.name)
@@ -40,5 +48,6 @@ class BusinessProfileManager(context: Context) {
         private const val KEY_LOGO_PATH = "business_logo_path"
         private const val KEY_CURRENCY = "business_currency"
         private const val KEY_DEFAULT_NOTES = "business_default_notes"
+        private const val KEY_DARK_MODE = "app_dark_mode"
     }
 }
