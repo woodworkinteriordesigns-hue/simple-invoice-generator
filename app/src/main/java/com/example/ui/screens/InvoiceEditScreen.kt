@@ -73,7 +73,7 @@ fun InvoiceEditScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .testTag("invoice_edit_scroll_list"),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 100.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 145.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Header banner
@@ -217,33 +217,77 @@ fun InvoiceEditScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth(),
-            shadowElevation = 12.dp,
+            shadowElevation = 16.dp,
             color = MaterialTheme.colorScheme.surface
         ) {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                OutlinedButton(
-                    onClick = {
-                        viewModel.generatePdfAndSwitchToPreview()
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(48.dp)
-                        .testTag("preview_button"),
-                    shape = RoundedCornerShape(12.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Visibility,
-                        contentDescription = "Preview",
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Preview", fontWeight = FontWeight.SemiBold)
+                    OutlinedButton(
+                        onClick = {
+                            viewModel.generatePdfAndSwitchToPreview()
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp)
+                            .testTag("preview_button"),
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Visibility,
+                            contentDescription = "Preview",
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Preview",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            maxLines = 1
+                        )
+                    }
+
+                    Button(
+                        onClick = {
+                            val activity = context as? Activity
+                            AdManager.showInterstitial(activity) {
+                                viewModel.shareCurrentPdf { file, invNo, client ->
+                                    ShareHelper.sharePdf(context, file, invNo, client)
+                                }
+                            }
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp)
+                            .testTag("share_pdf_main_btn"),
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = "Share",
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Share PDF",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            maxLines = 1
+                        )
+                    }
                 }
 
                 Button(
@@ -256,10 +300,11 @@ fun InvoiceEditScreen(
                         }
                     },
                     modifier = Modifier
-                        .weight(1.4f)
-                        .height(48.dp)
+                        .fillMaxWidth()
+                        .height(44.dp)
                         .testTag("whatsapp_share_direct_btn"),
                     shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF25D366),
                         contentColor = Color.White
@@ -268,7 +313,7 @@ fun InvoiceEditScreen(
                     if (isGenerating) {
                         CircularProgressIndicator(
                             color = Color.White,
-                            modifier = Modifier.size(20.dp),
+                            modifier = Modifier.size(18.dp),
                             strokeWidth = 2.dp
                         )
                     } else {
@@ -279,40 +324,12 @@ fun InvoiceEditScreen(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "WhatsApp",
-                            fontWeight = FontWeight.Bold
+                            text = "Send via WhatsApp",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            maxLines = 1
                         )
                     }
-                }
-
-                Button(
-                    onClick = {
-                        val activity = context as? Activity
-                        AdManager.showInterstitial(activity) {
-                            viewModel.shareCurrentPdf { file, invNo, client ->
-                                ShareHelper.sharePdf(context, file, invNo, client)
-                            }
-                        }
-                    },
-                    modifier = Modifier
-                        .weight(1.3f)
-                        .height(48.dp)
-                        .testTag("share_pdf_main_btn"),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Share,
-                        contentDescription = "Share",
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "Share PDF",
-                        fontWeight = FontWeight.Bold
-                    )
                 }
             }
         }

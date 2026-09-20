@@ -113,10 +113,10 @@ fun InvoiceApp(viewModel: InvoiceViewModel = viewModel()) {
                     icon = {
                         Icon(
                             imageVector = if (activeTab == AppTab.PREVIEW) Icons.Filled.PictureAsPdf else Icons.Outlined.PictureAsPdf,
-                            contentDescription = "Preview & Share"
+                            contentDescription = "Preview"
                         )
                     },
-                    label = { Text("Preview & Send", fontWeight = FontWeight.SemiBold) },
+                    label = { Text("Preview", fontWeight = FontWeight.SemiBold, maxLines = 1) },
                     modifier = Modifier.testTag("nav_tab_preview")
                 )
 

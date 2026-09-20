@@ -289,13 +289,13 @@ fun InvoicePreviewScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth(),
-            shadowElevation = 12.dp,
+            shadowElevation = 16.dp,
             color = MaterialTheme.colorScheme.surface
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -303,11 +303,17 @@ fun InvoicePreviewScreen(
                     onClick = { viewModel.setTab(AppTab.EDIT) },
                     modifier = Modifier
                         .weight(1f)
-                        .height(48.dp)
+                        .height(50.dp)
                         .testTag("edit_again_bottom_btn"),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)
                 ) {
-                    Text("Edit Invoice", fontWeight = FontWeight.SemiBold)
+                    Text(
+                        text = "Edit",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        maxLines = 1
+                    )
                 }
 
                 Button(
@@ -320,10 +326,11 @@ fun InvoicePreviewScreen(
                         }
                     },
                     modifier = Modifier
-                        .weight(1.5f)
-                        .height(48.dp)
+                        .weight(1.6f)
+                        .height(50.dp)
                         .testTag("share_pdf_all_apps_btn"),
                     shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary
                     )
@@ -336,7 +343,9 @@ fun InvoicePreviewScreen(
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = "Share PDF",
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        maxLines = 1
                     )
                 }
             }
