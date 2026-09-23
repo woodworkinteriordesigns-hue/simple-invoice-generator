@@ -403,17 +403,7 @@ fun InvoicePaperPreview(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(18.dp))
-                HorizontalDivider(color = Slate200)
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = "Thank you for your business! • Generated with Invoice Generator",
-                    fontSize = 9.sp,
-                    color = Slate400,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                // Footer clean end
             }
         }
     }

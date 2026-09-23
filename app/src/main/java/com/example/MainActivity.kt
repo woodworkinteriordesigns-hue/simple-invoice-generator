@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.ui.components.AdBanner
 import com.example.ui.screens.InvoiceEditScreen
 import com.example.ui.screens.InvoiceHistoryScreen
 import com.example.ui.screens.InvoicePreviewScreen
@@ -84,54 +85,66 @@ fun InvoiceApp(viewModel: InvoiceViewModel = viewModel()) {
         modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            NavigationBar(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .windowInsetsPadding(WindowInsets.navigationBars)
-                    .testTag("app_bottom_nav"),
-                containerColor = MaterialTheme.colorScheme.surface,
-                tonalElevation = 8.dp
             ) {
-                NavigationBarItem(
-                    selected = activeTab == AppTab.EDIT,
-                    onClick = { viewModel.setTab(AppTab.EDIT) },
-                    icon = {
-                        Icon(
-                            imageVector = if (activeTab == AppTab.EDIT) Icons.Filled.EditNote else Icons.Outlined.EditNote,
-                            contentDescription = "Edit Invoice"
-                        )
-                    },
-                    label = { Text("Invoice", fontWeight = FontWeight.SemiBold) },
-                    modifier = Modifier.testTag("nav_tab_edit")
+                // Permanent Bottom Banner Ad
+                AdBanner(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 2.dp)
                 )
 
-                NavigationBarItem(
-                    selected = activeTab == AppTab.PREVIEW,
-                    onClick = {
-                        viewModel.generatePdfAndSwitchToPreview()
-                    },
-                    icon = {
-                        Icon(
-                            imageVector = if (activeTab == AppTab.PREVIEW) Icons.Filled.PictureAsPdf else Icons.Outlined.PictureAsPdf,
-                            contentDescription = "Preview"
-                        )
-                    },
-                    label = { Text("Preview", fontWeight = FontWeight.SemiBold, maxLines = 1) },
-                    modifier = Modifier.testTag("nav_tab_preview")
-                )
+                NavigationBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("app_bottom_nav"),
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 8.dp
+                ) {
+                    NavigationBarItem(
+                        selected = activeTab == AppTab.EDIT,
+                        onClick = { viewModel.setTab(AppTab.EDIT) },
+                        icon = {
+                            Icon(
+                                imageVector = if (activeTab == AppTab.EDIT) Icons.Filled.EditNote else Icons.Outlined.EditNote,
+                                contentDescription = "Edit Invoice"
+                            )
+                        },
+                        label = { Text("Invoice", fontWeight = FontWeight.SemiBold) },
+                        modifier = Modifier.testTag("nav_tab_edit")
+                    )
 
-                NavigationBarItem(
-                    selected = activeTab == AppTab.HISTORY,
-                    onClick = { viewModel.setTab(AppTab.HISTORY) },
-                    icon = {
-                        Icon(
-                            imageVector = if (activeTab == AppTab.HISTORY) Icons.Filled.History else Icons.Outlined.History,
-                            contentDescription = "History"
-                        )
-                    },
-                    label = { Text("Saved", fontWeight = FontWeight.SemiBold) },
-                    modifier = Modifier.testTag("nav_tab_history")
-                )
+                    NavigationBarItem(
+                        selected = activeTab == AppTab.PREVIEW,
+                        onClick = {
+                            viewModel.generatePdfAndSwitchToPreview()
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = if (activeTab == AppTab.PREVIEW) Icons.Filled.PictureAsPdf else Icons.Outlined.PictureAsPdf,
+                                contentDescription = "Preview"
+                            )
+                        },
+                        label = { Text("Preview", fontWeight = FontWeight.SemiBold, maxLines = 1) },
+                        modifier = Modifier.testTag("nav_tab_preview")
+                    )
+
+                    NavigationBarItem(
+                        selected = activeTab == AppTab.HISTORY,
+                        onClick = { viewModel.setTab(AppTab.HISTORY) },
+                        icon = {
+                            Icon(
+                                imageVector = if (activeTab == AppTab.HISTORY) Icons.Filled.History else Icons.Outlined.History,
+                                contentDescription = "History"
+                            )
+                        },
+                        label = { Text("Saved", fontWeight = FontWeight.SemiBold) },
+                        modifier = Modifier.testTag("nav_tab_history")
+                    )
+                }
             }
         }
     ) { innerPadding ->

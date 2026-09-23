@@ -23,12 +23,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Print
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -163,8 +163,8 @@ fun InvoicePreviewScreen(
                             Button(
                                 onClick = {
                                     val activity = context as? Activity
-                                    AdManager.showInterstitial(activity) {
-                                        viewModel.shareCurrentPdf { file, invNo, client ->
+                                    viewModel.shareCurrentPdf { file, invNo, client ->
+                                        AdManager.showInterstitial(activity) {
                                             ShareHelper.shareOnWhatsApp(context, file, invNo, client)
                                         }
                                     }
@@ -180,7 +180,7 @@ fun InvoicePreviewScreen(
                                 )
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Send,
+                                    imageVector = Icons.AutoMirrored.Filled.Send,
                                     contentDescription = "WhatsApp",
                                     modifier = Modifier.size(16.dp)
                                 )
@@ -192,8 +192,8 @@ fun InvoicePreviewScreen(
                             Button(
                                 onClick = {
                                     val activity = context as? Activity
-                                    AdManager.showInterstitial(activity) {
-                                        viewModel.shareCurrentPdf { file, invNo, client ->
+                                    viewModel.shareCurrentPdf { file, invNo, client ->
+                                        AdManager.showInterstitial(activity) {
                                             ShareHelper.shareViaEmail(
                                                 context,
                                                 file,
@@ -244,7 +244,7 @@ fun InvoicePreviewScreen(
                                 shape = RoundedCornerShape(10.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.OpenInNew,
+                                    imageVector = Icons.AutoMirrored.Filled.OpenInNew,
                                     contentDescription = "Open PDF",
                                     modifier = Modifier.size(16.dp)
                                 )
@@ -319,8 +319,8 @@ fun InvoicePreviewScreen(
                 Button(
                     onClick = {
                         val activity = context as? Activity
-                        AdManager.showInterstitial(activity) {
-                            viewModel.shareCurrentPdf { file, invNo, client ->
+                        viewModel.shareCurrentPdf { file, invNo, client ->
+                            AdManager.showInterstitial(activity) {
                                 ShareHelper.sharePdf(context, file, invNo, client)
                             }
                         }

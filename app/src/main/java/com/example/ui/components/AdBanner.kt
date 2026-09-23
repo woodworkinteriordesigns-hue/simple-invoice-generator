@@ -11,12 +11,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -35,10 +32,9 @@ import com.google.android.gms.ads.LoadAdError
 @Composable
 fun AdBanner(
     modifier: Modifier = Modifier,
-    adUnitId: String = AdManager.BANNER_AD_UNIT_ID
+    adUnitId: String = AdManager.currentBannerAdUnitId
 ) {
     val isInspection = LocalInspectionMode.current
-    val context = LocalContext.current
 
     Box(
         modifier = modifier
@@ -71,47 +67,28 @@ fun AdBanner(
                     Text("AdMob Banner Preview", fontSize = 12.sp, color = Slate400)
                 }
             } else {
-                val adView = remember {
-                    try {
-                        AdView(context).apply {
-                            setAdSize(AdSize.BANNER)
-                            this.adUnitId = adUnitId
-                            adListener = object : AdListener() {
-                                override fun onAdFailedToLoad(error: LoadAdError) {
-                                    super.onAdFailedToLoad(error)
+                AndroidView(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .testTag("admob_banner_view"),
+                    factory = { ctx ->
+                        try {
+                            AdView(ctx).apply {
+                                setAdSize(AdSize.BANNER)
+                                this.adUnitId = adUnitId
+                                adListener = object : AdListener() {
+                                    override fun onAdFailedToLoad(error: LoadAdError) {
+                                        super.onAdFailedToLoad(error)
+                                    }
                                 }
+                                loadAd(AdRequest.Builder().build())
                             }
-                            loadAd(AdRequest.Builder().build())
-                        }
-                    } catch (_: Throwable) {
-                        null
-                    }
-                }
-
-                if (adView != null) {
-                    DisposableEffect(adView) {
-                        onDispose {
-                            adView.destroy()
+                        } catch (_: Throwable) {
+                            android.widget.FrameLayout(ctx)
                         }
                     }
-
-                    AndroidView(
-                        factory = { adView },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp)
-                            .testTag("admob_banner_view")
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("AdMob Banner (Test Ad)", fontSize = 11.sp, color = Slate400)
-                    }
-                }
+                )
             }
         }
     }

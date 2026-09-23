@@ -39,6 +39,10 @@ class InvoiceViewModel(application: Application) : AndroidViewModel(application)
     private val invoiceDao = db.invoiceDao()
     private val profileManager = BusinessProfileManager(application)
 
+    val savedInvoices: StateFlow<List<Invoice>> = invoiceDao.getAllInvoices()
+        .map { list -> list.map { it.toInvoice() } }
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     private val _activeTab = MutableStateFlow(AppTab.EDIT)
     val activeTab: StateFlow<AppTab> = _activeTab.asStateFlow()
 
@@ -63,18 +67,16 @@ class InvoiceViewModel(application: Application) : AndroidViewModel(application)
     private val _userMessage = MutableStateFlow<String?>(null)
     val userMessage: StateFlow<String?> = _userMessage.asStateFlow()
 
-    val savedInvoices: StateFlow<List<Invoice>> = invoiceDao.getAllInvoices()
-        .map { list -> list.map { it.toInvoice() } }
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
     private fun createInitialInvoice(): Invoice {
         val profile = profileManager.getProfile()
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val today = dateFormat.format(Date())
 
+        val nextNumber = generateNextInvoiceNumber()
+
         return Invoice(
             id = UUID.randomUUID().toString(),
-            invoiceNumber = "",
+            invoiceNumber = nextNumber,
             issueDate = today,
             dueDate = "",
             currency = profile.currency.ifBlank { "Rs" },
@@ -100,6 +102,32 @@ class InvoiceViewModel(application: Application) : AndroidViewModel(application)
             notes = profile.defaultNotes,
             status = "Draft"
         )
+    }
+
+    private fun generateNextInvoiceNumber(): String {
+        val existing = try {
+            @Suppress("UNNECESSARY_SAFE_CALL")
+            savedInvoices?.value ?: emptyList()
+        } catch (_: Throwable) {
+            emptyList()
+        }
+        if (existing.isEmpty()) {
+            return "INV-001"
+        }
+        val numbers = existing.mapNotNull { inv ->
+            val digits = inv.invoiceNumber.filter { it.isDigit() }
+            digits.toIntOrNull()
+        }
+        val maxNum = numbers.maxOrNull() ?: 0
+        return String.format(Locale.US, "INV-%03d", maxNum + 1)
+    }
+
+    fun setQuickDueDate(daysFromNow: Int) {
+        val calendar = java.util.Calendar.getInstance()
+        calendar.add(java.util.Calendar.DAY_OF_YEAR, daysFromNow)
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dateStr = dateFormat.format(calendar.time)
+        updateDueDate(dateStr)
     }
 
     fun setTab(tab: AppTab) {
@@ -304,12 +332,23 @@ class InvoiceViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun shareCurrentPdf(shareAction: (File, String, String) -> Unit) {
-        val existingPdf = _lastGeneratedPdf.value
-        if (existingPdf != null && existingPdf.exists()) {
-            shareAction(existingPdf, _currentInvoice.value.invoiceNumber, _currentInvoice.value.clientName)
-        } else {
-            generatePdfAndSwitchToPreview { pdfFile ->
-                shareAction(pdfFile, _currentInvoice.value.invoiceNumber, _currentInvoice.value.clientName)
+        viewModelScope.launch(Dispatchers.IO) {
+            _isGenerating.value = true
+            try {
+                val file = InvoicePdfGenerator.generatePdf(getApplication(), _currentInvoice.value)
+                val entity = InvoiceEntity.fromInvoice(_currentInvoice.value)
+                invoiceDao.insertInvoice(entity)
+
+                withContext(Dispatchers.Main) {
+                    _lastGeneratedPdf.value = file
+                    _isGenerating.value = false
+                    shareAction(file, _currentInvoice.value.invoiceNumber, _currentInvoice.value.clientName)
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    _isGenerating.value = false
+                    _userMessage.value = "PDF error: ${e.localizedMessage}"
+                }
             }
         }
     }

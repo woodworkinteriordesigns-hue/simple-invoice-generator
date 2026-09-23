@@ -55,6 +55,10 @@ object ShareHelper {
         clientName: String
     ) {
         try {
+            if (!pdfFile.exists()) {
+                Toast.makeText(context, "PDF not found. Please regenerate.", Toast.LENGTH_SHORT).show()
+                return
+            }
             val uri = getFileUri(context, pdfFile)
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = "application/pdf"
@@ -70,8 +74,13 @@ object ShareHelper {
                 clipData = ClipData.newRawUri("Invoice PDF", uri)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
-            val chooser = Intent.createChooser(intent, "Send Invoice via...")
-            chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            val chooser = Intent.createChooser(intent, "Send Invoice via...").apply {
+                clipData = ClipData.newRawUri("Invoice PDF", uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                if (context !is android.app.Activity) {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+            }
             context.startActivity(chooser)
         } catch (e: Exception) {
             Toast.makeText(context, "Error sharing invoice: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
@@ -84,18 +93,24 @@ object ShareHelper {
         invoiceNumber: String,
         clientName: String
     ) {
+        if (!pdfFile.exists()) {
+            Toast.makeText(context, "PDF not found. Please regenerate.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val clientGreeting = if (clientName.isNotBlank()) "Dear $clientName," else "Respected Client,"
+        val messageText = "$clientGreeting\n\nPlease find attached your Invoice #$invoiceNumber.\nThank you for doing business with us!\n\n(Generated via Invoice Generator)"
         try {
             val uri = getFileUri(context, pdfFile)
             val sendIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "application/pdf"
                 putExtra(Intent.EXTRA_STREAM, uri)
-                putExtra(
-                    Intent.EXTRA_TEXT,
-                    "Invoice $invoiceNumber for ${clientName.ifBlank { "Client" }}. Please check the attached PDF."
-                )
+                putExtra(Intent.EXTRA_TEXT, messageText)
                 clipData = ClipData.newRawUri("Invoice PDF", uri)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 setPackage("com.whatsapp")
+                if (context !is android.app.Activity) {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
             }
             context.startActivity(sendIntent)
         } catch (_: Exception) {
@@ -105,13 +120,13 @@ object ShareHelper {
                 val businessIntent = Intent(Intent.ACTION_SEND).apply {
                     type = "application/pdf"
                     putExtra(Intent.EXTRA_STREAM, uri)
-                    putExtra(
-                        Intent.EXTRA_TEXT,
-                        "Invoice $invoiceNumber for ${clientName.ifBlank { "Client" }}. Please check the attached PDF."
-                    )
+                    putExtra(Intent.EXTRA_TEXT, messageText)
                     clipData = ClipData.newRawUri("Invoice PDF", uri)
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     setPackage("com.whatsapp.w4b")
+                    if (context !is android.app.Activity) {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
                 }
                 context.startActivity(businessIntent)
             } catch (_: Exception) {
@@ -128,6 +143,10 @@ object ShareHelper {
         clientName: String,
         clientEmail: String
     ) {
+        if (!pdfFile.exists()) {
+            Toast.makeText(context, "PDF not found. Please regenerate.", Toast.LENGTH_SHORT).show()
+            return
+        }
         try {
             val uri = getFileUri(context, pdfFile)
             val intent = Intent(Intent.ACTION_SEND).apply {
@@ -147,8 +166,13 @@ object ShareHelper {
                 clipData = ClipData.newRawUri("Invoice PDF", uri)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
-            val chooser = Intent.createChooser(intent, "Send Email via...")
-            chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            val chooser = Intent.createChooser(intent, "Send Email via...").apply {
+                clipData = ClipData.newRawUri("Invoice PDF", uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                if (context !is android.app.Activity) {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+            }
             context.startActivity(chooser)
         } catch (e: Exception) {
             sharePdf(context, pdfFile, invoiceNumber, clientName)
@@ -157,12 +181,18 @@ object ShareHelper {
 
     fun openPdf(context: Context, pdfFile: File) {
         try {
+            if (!pdfFile.exists()) {
+                Toast.makeText(context, "PDF not found.", Toast.LENGTH_SHORT).show()
+                return
+            }
             val uri = getFileUri(context, pdfFile)
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 setDataAndType(uri, "application/pdf")
                 clipData = ClipData.newRawUri("Invoice PDF", uri)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                if (context !is android.app.Activity) {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
             }
             context.startActivity(intent)
         } catch (e: Exception) {

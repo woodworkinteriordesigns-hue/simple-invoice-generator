@@ -18,11 +18,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.PictureAsPdf
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.Button
@@ -186,7 +186,8 @@ fun InvoiceEditScreen(
                     onInvoiceNumberChange = { viewModel.updateInvoiceNumber(it) },
                     onIssueDateChange = { viewModel.updateIssueDate(it) },
                     onDueDateChange = { viewModel.updateDueDate(it) },
-                    onCurrencyChange = { viewModel.updateCurrency(it) }
+                    onCurrencyChange = { viewModel.updateCurrency(it) },
+                    onQuickDueDate = { viewModel.setQuickDueDate(it) }
                 )
             }
 
@@ -259,8 +260,8 @@ fun InvoiceEditScreen(
                     Button(
                         onClick = {
                             val activity = context as? Activity
-                            AdManager.showInterstitial(activity) {
-                                viewModel.shareCurrentPdf { file, invNo, client ->
+                            viewModel.shareCurrentPdf { file, invNo, client ->
+                                AdManager.showInterstitial(activity) {
                                     ShareHelper.sharePdf(context, file, invNo, client)
                                 }
                             }
@@ -293,8 +294,8 @@ fun InvoiceEditScreen(
                 Button(
                     onClick = {
                         val activity = context as? Activity
-                        AdManager.showInterstitial(activity) {
-                            viewModel.shareCurrentPdf { file, invNo, client ->
+                        viewModel.shareCurrentPdf { file, invNo, client ->
+                            AdManager.showInterstitial(activity) {
                                 ShareHelper.shareOnWhatsApp(context, file, invNo, client)
                             }
                         }
@@ -318,7 +319,7 @@ fun InvoiceEditScreen(
                         )
                     } else {
                         Icon(
-                            imageVector = Icons.Default.Send,
+                            imageVector = Icons.AutoMirrored.Filled.Send,
                             contentDescription = "WhatsApp",
                             modifier = Modifier.size(18.dp)
                         )

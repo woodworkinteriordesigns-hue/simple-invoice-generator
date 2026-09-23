@@ -407,15 +407,6 @@ object InvoicePdfGenerator {
             }
         }
 
-        // Bottom Footer
-        val paintFooter = Paint().apply {
-            color = Color.parseColor("#94A3B8")
-            textSize = 8f
-            typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-            textAlign = Paint.Align.CENTER
-            isAntiAlias = true
-        }
-        canvas.drawLine(MARGIN, PAGE_HEIGHT - 35f, PAGE_WIDTH - MARGIN, PAGE_HEIGHT - 35f, paintDivider)
-        canvas.drawText("Thank you for your business! • Generated with Invoice Generator", PAGE_WIDTH / 2f, PAGE_HEIGHT - 22f, paintFooter)
+        // Bottom Footer clean end
     }
 }

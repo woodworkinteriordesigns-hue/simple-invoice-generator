@@ -21,12 +21,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
@@ -192,7 +192,7 @@ fun InvoiceHistoryScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.ReceiptLong,
+                                imageVector = Icons.AutoMirrored.Filled.ReceiptLong,
                                 contentDescription = "No Invoices",
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(32.dp)
@@ -250,12 +250,22 @@ fun InvoiceHistoryScreen(
                             },
                             onShare = {
                                 val activity = context as? Activity
-                                AdManager.showInterstitial(activity) {
-                                    viewModel.loadInvoice(invoice)
-                                    viewModel.shareCurrentPdf { file, invNo, client ->
+                                viewModel.loadInvoice(invoice)
+                                viewModel.shareCurrentPdf { file, invNo, client ->
+                                    AdManager.showInterstitial(activity) {
                                         ShareHelper.sharePdf(context, file, invNo, client)
                                     }
                                 }
+                            },
+                            onToggleStatus = {
+                                val nextStatus = when (invoice.status) {
+                                    "Draft" -> "Sent"
+                                    "Sent" -> "Paid"
+                                    "Paid" -> "Draft"
+                                    else -> "Paid"
+                                }
+                                viewModel.loadInvoice(invoice)
+                                viewModel.updateStatus(nextStatus)
                             },
                             onDelete = { viewModel.deleteInvoice(invoice.id) }
                         )
@@ -272,6 +282,7 @@ private fun InvoiceHistoryItemCard(
     onOpen: () -> Unit,
     onEdit: () -> Unit,
     onShare: () -> Unit,
+    onToggleStatus: () -> Unit,
     onDelete: () -> Unit
 ) {
     Card(
@@ -304,19 +315,20 @@ private fun InvoiceHistoryItemCard(
                                 when (invoice.status) {
                                     "Paid" -> Color(0xFFDCFCE7)
                                     "Sent" -> MaterialTheme.colorScheme.primaryContainer
-                                    else -> Color(0xFFF1F5F9)
+                                    else -> Color(0xFFFEF3C7)
                                 }
                             )
-                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                            .clickable { onToggleStatus() }
+                            .padding(horizontal = 8.dp, vertical = 3.dp)
                     ) {
                         Text(
-                            text = invoice.status,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
+                            text = invoice.status.uppercase(),
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.ExtraBold,
                             color = when (invoice.status) {
                                 "Paid" -> Green600
                                 "Sent" -> MaterialTheme.colorScheme.primary
-                                else -> Slate500
+                                else -> Color(0xFFD97706)
                             }
                         )
                     }
