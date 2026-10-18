@@ -46,12 +46,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ui.components.BusinessAddressCard
 import com.example.ui.components.ClientAddressCard
+import com.example.ui.components.CollapsibleBusinessCard
 import com.example.ui.components.InvoiceItemsEditor
 import com.example.ui.components.InvoiceMetaCard
 import com.example.ui.components.InvoiceTotalsCard
-import com.example.ui.components.LogoUploadCard
 import com.example.ui.theme.Slate200
 import com.example.ui.viewmodel.AppTab
 import com.example.ui.viewmodel.InvoiceViewModel
@@ -138,26 +137,21 @@ fun InvoiceEditScreen(
                 }
             }
 
-            // 1. Logo Upload
+            // 1. Sleek Collapsible Business Details & Logo Card
             item {
-                LogoUploadCard(
-                    logoPath = invoice.businessLogoPath,
-                    onLogoSelected = { uri -> viewModel.updateBusinessLogo(uri) },
-                    onRemoveLogo = { viewModel.removeBusinessLogo() }
-                )
-            }
-
-            // 2. Business Address (Sender)
-            item {
-                BusinessAddressCard(
+                CollapsibleBusinessCard(
                     businessName = invoice.businessName,
                     businessAddress = invoice.businessAddress,
                     businessPhone = invoice.businessPhone,
                     businessEmail = invoice.businessEmail,
+                    logoPath = invoice.businessLogoPath,
+                    isInitiallyExpanded = !viewModel.hasSavedProfile,
                     onNameChange = { viewModel.updateBusinessName(it) },
                     onAddressChange = { viewModel.updateBusinessAddress(it) },
                     onPhoneChange = { viewModel.updateBusinessPhone(it) },
                     onEmailChange = { viewModel.updateBusinessEmail(it) },
+                    onLogoSelected = { uri -> viewModel.updateBusinessLogo(uri) },
+                    onRemoveLogo = { viewModel.removeBusinessLogo() },
                     onSaveAsDefault = { viewModel.saveAsDefaultBusinessProfile() }
                 )
             }

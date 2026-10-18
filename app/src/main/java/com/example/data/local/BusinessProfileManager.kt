@@ -20,6 +20,14 @@ class BusinessProfileManager(context: Context) {
         )
     }
 
+    fun hasSavedProfile(): Boolean {
+        val name = prefs.getString(KEY_NAME, "") ?: ""
+        val address = prefs.getString(KEY_ADDRESS, "") ?: ""
+        val phone = prefs.getString(KEY_PHONE, "") ?: ""
+        val logo = prefs.getString(KEY_LOGO_PATH, null)
+        return name.isNotBlank() || address.isNotBlank() || phone.isNotBlank() || !logo.isNullOrBlank()
+    }
+
     fun isDarkMode(): Boolean {
         return prefs.getBoolean(KEY_DARK_MODE, false)
     }

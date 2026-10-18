@@ -64,6 +64,9 @@ class InvoiceViewModel(application: Application) : AndroidViewModel(application)
         profileManager.setDarkMode(newMode)
     }
 
+    val hasSavedProfile: Boolean
+        get() = profileManager.hasSavedProfile()
+
     private val _userMessage = MutableStateFlow<String?>(null)
     val userMessage: StateFlow<String?> = _userMessage.asStateFlow()
 
